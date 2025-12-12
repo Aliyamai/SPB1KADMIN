@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - TVET Perantisan</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      background: #fffffe;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .logo img {
+      height: 70px;
+      width: auto;
+    }
+
+    .admin-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .admin-info span {
+      color: #1e293b;
+      font-weight: 600;
+    }
+
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #dc2626;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1400px;
+      margin: 30px auto;
+    }
+
+    .page-title {
+      font-size: 28px;
+      color: #1e293b;
+      margin-bottom: 30px;
+      border-left: 6px solid #f97316;
+      padding-left: 15px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease;
+      border-left: 5px solid #f97316;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-card.pending {
+      border-left-color: #f59e0b;
+    }
+
+    .stat-card.approved {
+      border-left-color: #10b981;
+    }
+
+    .stat-card.total {
+      border-left-color: #3b82f6;
+    }
+
+    .stat-card.new {
+      border-left-color: #8b5cf6;
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .stat-icon {
+      font-size: 32px;
+      opacity: 0.8;
+    }
+
+    .stat-label {
+      color: #64748b;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .stat-change {
+      font-size: 13px;
+      color: #10b981;
+      margin-top: 8px;
+    }
+
+    .applications-section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      color: #1e293b;
+      border-left: 5px solid #f97316;
+      padding-left: 12px;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.3s;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .filter-btn:hover {
+      border-color: #f97316;
+      color: #f97316;
+    }
+
+    .filter-btn.active {
+      background: #f97316;
+      color: white;
+      border-color: #f97316;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: #f8f9fa;
+    }
+
+    th {
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      color: #475569;
+      font-size: 14px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #475569;
+    }
+
+    tbody tr:hover {
+      background: #f8f9fa;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-approved {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: 0.3s;
+      font-weight: 500;
+    }
+
+    .btn-view {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-view:hover {
+      background: #2563eb;
+    }
+
+    .btn-approve {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-approve:hover {
+      background: #059669;
+    }
+
+    .btn-reject {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-reject:hover {
+      background: #dc2626;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-buttons {
+        flex-wrap: wrap;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <img src="assets/images/skimperantisan.png" alt="Logo TVET" onerror="this.style.display='none'">
+    </div>
+    <div class="admin-info">
+      <span>👤 Admin</span>
+      <a href="#" class="logout-btn">Log Keluar</a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="container">
+    <h1 class="page-title">Dashboard Admin</h1>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card pending">
+        <div class="stat-header">
+          <div>
+            <div class="stat-label">Permohonan Pending</div>
+            <div class="stat-value" id="pendingCount">12</div>
+            <div class="stat-change">⏳ Menunggu kelulusan</div>
+          </div>
+          <div class="stat-icon">⏱️</div>
+        </div>
+      </div>
+
+      <div class="stat-card approved">
+        <div class="stat-header">
+          <div>
+            <div class="stat-label">Pelajar Diterima</div>
+            <div class="stat-value" id="approvedCount">48</div>
+            <div class="stat-change">✅ +8 bulan ini</div>
+          </div>
+          <div class="stat-icon">✅</div>
+        </div>
+      </div>
+
+      <div class="stat-card total">
+        <div class="stat-header">
+          <div>
+            <div class="stat-label">Jumlah Pelajar</div>
+            <div class="stat-value" id="totalStudents">67</div>
+            <div class="stat-change">📊 Total keseluruhan</div>
+          </div>
+          <div class="stat-icon">👥</div>
+        </div>
+      </div>
+
+      <div class="stat-card new">
+        <div class="stat-header">
+          <div>
+            <div class="stat-label">Permohonan Baru</div>
+            <div class="stat-value" id="newCount">5</div>
+            <div class="stat-change">🆕 7 hari terakhir</div>
+          </div>
+          <div class="stat-icon">📝</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Applications Table -->
+    <div class="applications-section">
+      <div class="section-header">
+        <h2 class="section-title">Senarai Permohonan</h2>
+        <div class="filter-buttons">
+          <button class="filter-btn active" onclick="filterApplications('semua')">Semua</button>
+          <button class="filter-btn" onclick="filterApplications('pending')">Pending</button>
+          <button class="filter-btn" onclick="filterApplications('diterima')">Diterima</button>
+          <button class="filter-btn" onclick="filterApplications('ditolak')">Ditolak</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table id="applicationsTable">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Nama Pemohon</th>
+              <th>Kursus</th>
+              <th>Tarikh Mohon</th>
+              <th>Status</th>
+              <th>Tindakan</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Data will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Skim Perantisan Belia Kemahiran TVET. Hak Cipta Terpelihara.</p>
+  </footer>
+
+  <script>
+    // Sample data
+    const applications = [
+      { id: 1, name: "Ahmad bin Abdullah", course: "Elektrik", date: "2025-01-05", status: "pending" },
+      { id: 2, name: "Siti Nurhaliza binti Hassan", course: "Automotif", date: "2025-01-04", status: "pending" },
+      { id: 3, name: "Muhammad Faiz bin Ismail", course: "Penyejukan & Penghawa Dingin", date: "2025-01-03", status: "diterima" },
+      { id: 4, name: "Nurul Ain binti Mohamed", course: "Kecantikan", date: "2025-01-02", status: "pending" },
+      { id: 5, name: "Ali bin Rahman", course: "Pertukangan Besi", date: "2025-01-01", status: "diterima" },
+      { id: 6, name: "Fatimah binti Yusof", course: "Pembuatan Kek & Pastri", date: "2024-12-30", status: "pending" },
+      { id: 7, name: "Azman bin Karim", course: "Teknologi Pembinaan Bangunan", date: "2024-12-28", status: "diterima" },
+      { id: 8, name: "Zahra binti Zakaria", course: "Kecantikan", date: "2024-12-27", status: "ditolak" },
+      { id: 9, name: "Hafiz bin Omar", course: "Automotif", date: "2024-12-25", status: "diterima" },
+      { id: 10, name: "Aisyah binti Ibrahim", course: "Elektrik", date: "2024-12-23", status: "pending" },
+      { id: 11, name: "Razak bin Jamil", course: "Pertukangan Besi", date: "2024-12-20", status: "diterima" },
+      { id: 12, name: "Zainab binti Halim", course: "Pembuatan Kek & Pastri", date: "2024-12-18", status: "pending" }
+    ];
+
+    let currentFilter = 'semua';
+
+    function renderTable(filter = 'semua') {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      const filtered = filter === 'semua' 
+        ? applications 
+        : applications.filter(app => app.status === filter);
+
+      filtered.forEach((app, index) => {
+        const row = document.createElement('tr');
+        
+        const statusClass = `status-${app.status === 'diterima' ? 'approved' : app.status === 'ditolak' ? 'rejected' : 'pending'}`;
+        const statusText = app.status === 'pending' ? 'Pending' : app.status === 'diterima' ? 'Diterima' : 'Ditolak';
+
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${app.name}</td>
+          <td>${app.course}</td>
+          <td>${app.date}</td>
+          <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+          <td>
+            <div class="action-btns">
+              <button class="action-btn btn-view" onclick="viewApplication(${app.id})">Lihat</button>
+              ${app.status === 'pending' ? `
+                <button class="action-btn btn-approve" onclick="approveApplication(${app.id})">Terima</button>
+                <button class="action-btn btn-reject" onclick="rejectApplication(${app.id})">Tolak</button>
+              ` : ''}
+            </div>
+          </td>
+        `;
+        
+        tbody.appendChild(row);
+      });
+
+      updateStats();
+    }
+
+    function updateStats() {
+      const pending = applications.filter(app => app.status === 'pending').length;
+      const approved = applications.filter(app => app.status === 'diterima').length;
+      const total = applications.length;
+      const newApps = applications.filter(app => {
+        const appDate = new Date(app.date);
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        return appDate >= weekAgo;
+      }).length;
+
+      document.getElementById('pendingCount').textContent = pending;
+      document.getElementById('approvedCount').textContent = approved;
+      document.getElementById('totalStudents').textContent = total;
+      document.getElementById('newCount').textContent = newApps;
+    }
+
+    function filterApplications(filter) {
+      currentFilter = filter;
+      
+      // Update active button
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      renderTable(filter);
+    }
+
+    function viewApplication(id) {
+      const app = applications.find(a => a.id === id);
+      alert(`Melihat permohonan:\n\nNama: ${app.name}\nKursus: ${app.course}\nTarikh: ${app.date}\nStatus: ${app.status}`);
+    }
+
+    function approveApplication(id) {
+      const app = applications.find(a => a.id === id);
+      if (confirm(`Terima permohonan daripada ${app.name}?`)) {
+        app.status = 'diterima';
+        renderTable(currentFilter);
+        alert('Permohonan telah diterima!');
+      }
+    }
+
+    function rejectApplication(id) {
+      const app = applications.find(a => a.id === id);
+      if (confirm(`Tolak permohonan daripada ${app.name}?`)) {
+        app.status = 'ditolak';
+        renderTable(currentFilter);
+        alert('Permohonan telah ditolak.');
+      }
+    }
+
+    // Initialize table on load
+    renderTable();
+  </script>
+</body>
+</html>
