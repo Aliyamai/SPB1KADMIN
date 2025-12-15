@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Projek Perantisan TVET</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background-color: #f4f6f8;
+      color: #333;
+    }
+
+    /* Header */
+    header {
+      background-color: #0d3b66;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 40px;
+    }
+
+    .logo img {
+      height: 55px;
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+    }
+
+    nav a:hover,
+    nav a.active {
+      text-decoration: underline;
+    }
+
+    .login-btn {
+      margin-left: 30px;
+      padding: 8px 18px;
+      background-color: #ffd166;
+      color: #0d3b66;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .login-btn:hover {
+      background-color: #ffbf33;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(to right, #0d3b66, #145da0);
+      color: white;
+      padding: 60px 40px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .hero span {
+      color: #ffd166;
+    }
+
+    .hero p {
+      font-size: 18px;
+    }
+
+    /* Dashboard */
+    .dashboard {
+      padding: 50px 40px;
+    }
+
+    .dashboard h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #0d3b66;
+    }
+
+    .dashboard-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      margin-bottom: 15px;
+      color: #145da0;
+      font-size: 18px;
+    }
+
+    .card p {
+      font-size: 26px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* Admin Functions */
+    .admin-functions {
+      background: #ffffff;
+      margin: 0 40px 50px;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .admin-functions h2 {
+      margin-bottom: 20px;
+      color: #0d3b66;
+      text-align: center;
+    }
+
+    .admin-functions ul {
+      list-style: none;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .admin-functions li {
+      padding: 12px 0;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #0d3b66;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+      }
+
+      .nav-container {
+        margin-top: 10px;
+      }
+
+      nav a {
+        margin: 0 10px;
+      }
+
+      .login-btn {
+        margin-left: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <img src="assets/images/skimperantisan.png" alt="Logo TVET">
+    </div>
+
+    <div class="nav-container">
+      <nav>
+        <a href="index.html" class="active">Dashboard</a>
+        <a href="pengguna.html">Pengguna</a>
+        <a href="kursus.html">Kursus</a>
+        <a href="permohonan.html">Permohonan</a>
+        <a href="laporan.html">Laporan</a>
+      </nav>
+
+      <!-- LOGIN BUTTON -->
+      <a href="adminlogin.html" class="login-btn">Login</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Selamat Datang, <span>Admin</span></h1>
+    <p>Panel pengurusan sistem Projek Perantisan TVET</p>
+  </section>
+
+  <!-- Dashboard -->
+  <section class="dashboard">
+    <h2>Ringkasan Sistem</h2>
+
+    <div class="dashboard-cards">
+      <div class="card">
+        <h3>👤 Jumlah Pemohon</h3>
+        <p>120</p>
+      </div>
+
+      <div class="card">
+        <h3>📚 Jumlah Kursus</h3>
+        <p>8</p>
+      </div>
+
+      <div class="card">
+        <h3>✅ Diluluskan</h3>
+        <p>65</p>
+      </div>
+
+      <div class="card">
+        <h3>⏳ Menunggu</h3>
+        <p>35</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Admin Functions -->
+  <section class="admin-functions">
+    <h2>Fungsi Pentadbir</h2>
+    <ul>
+      <li>Mengurus akaun pengguna</li>
+      <li>Mengurus kursus latihan</li>
+      <li>Menyemak & meluluskan permohonan</li>
+      <li>Menjana laporan & statistik</li>
+    </ul>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Sistem Admin Projek Perantisan TVET. Hak Cipta Terpelihara.</p>
+  </footer>
+
+</body>
+</html>
