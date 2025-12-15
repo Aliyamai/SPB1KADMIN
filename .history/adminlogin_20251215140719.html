@@ -393,9 +393,7 @@
         </button>
       </form>
 
-      <div class="back-home">
-        Kembali ke <a href="index.html">Laman Utama</a>
-      </div>
+      
     </div>
   </div>
 
@@ -516,7 +514,7 @@
         storage.setItem('tvet_admin_role', result.user.role);
 
         // Redirect to dashboard
-        window.location.href = 'pageadmin.html';
+        window.location.href = 'admin-dashboard.html';
       } else {
         setLoading(false);
         showError(result.message);
