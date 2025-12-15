@@ -401,7 +401,7 @@
 
   <script>
     // Google Apps Script Web App URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyVp-eYcTrAlICddMlqQ1fnRFYn2O8Adqhy084AQCGc8Nl1sRHSbaj3jg8EsG-Lyohd/exec'; // Replace with your deployed web app URL
+    const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // Replace with your deployed web app URL
     
     let isPasswordVisible = false;
 
@@ -411,7 +411,7 @@
       
       isPasswordVisible = !isPasswordVisible;
       passwordInput.type = isPasswordVisible ? 'text' : 'password';
-      toggleIcon.textContent = isPasswordVisible ? '🙈' : '👁️';
+      toggleIcon.textContent = isPasswordVisible ? 'ðŸ™ˆ' : 'ðŸ'ï¸';
     }
 
     function showError(message) {
