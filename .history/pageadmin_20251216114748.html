@@ -565,8 +565,9 @@
   </footer>
 
   <script>
-    // Google Apps Script Web App URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbydJRdDuu-o60sZFiCbHcC8JRjdpOAOpdzpkPBy50rfEQxjBhw7j20K5hWww3q--IHs/exec'; // Replace with your deployed Apps Script URL
+    // Google Sheets Configuration
+    const SHEET_ID = '1IiF20cCiOsIDszL1tNl5W772fip1M2-kaqgAVGYOu9o';
+    const API_KEY = 'YOUR_API_KEY'; // Replace with your Google Sheets API Key
 
     // Define courses with their sheet names
     const COURSES = [
@@ -623,32 +624,18 @@
       }
     }
 
-    // Fetch data from Google Sheets via Apps Script
+    // Fetch data from Google Sheets
     async function fetchSheetData(sheetName) {
       try {
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: 'getApplications',
-            course: sheetName
-          })
-        });
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${sheetName}?key=${API_KEY}`;
+        const response = await fetch(url);
         
         if (!response.ok) {
           throw new Error(`Failed to fetch ${sheetName}`);
         }
         
-        const result = await response.json();
-        
-        if (result.success) {
-          return result.data.applications || [];
-        } else {
-          console.error(result.message);
-          return [];
-        }
+        const data = await response.json();
+        return data.values || [];
       } catch (error) {
         console.error(`Error fetching ${sheetName}:`, error);
         return [];

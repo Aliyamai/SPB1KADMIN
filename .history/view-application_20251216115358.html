@@ -287,9 +287,6 @@
   </div>
 
   <script>
-    // Google Apps Script Web App URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbydJRdDuu-o60sZFiCbHcC8JRjdpOAOpdzpkPBy50rfEQxjBhw7j20K5hWww3q--IHs/exec'; // Replace with your deployed Apps Script URL
-    
     // Load application data
     function loadApplicationData() {
       const appData = sessionStorage.getItem('viewing_application');
@@ -535,73 +532,26 @@
     }
 
     // Approve application
-    async function approveApplication() {
+    function approveApplication() {
       const appData = sessionStorage.getItem('viewing_application');
       const app = JSON.parse(appData);
       
       if (confirm(`Adakah anda pasti ingin menerima permohonan daripada ${app.nama}?`)) {
-        await updateStatus(app, 'diterima');
+        // TODO: Update status in Google Sheets
+        alert('Permohonan telah diterima!');
+        window.location.href = 'pageadmin.html';
       }
     }
 
     // Reject application
-    async function rejectApplication() {
+    function rejectApplication() {
       const appData = sessionStorage.getItem('viewing_application');
       const app = JSON.parse(appData);
       
       if (confirm(`Adakah anda pasti ingin menolak permohonan daripada ${app.nama}?`)) {
-        await updateStatus(app, 'ditolak');
-      }
-    }
-
-    // Update status in Google Sheets
-    async function updateStatus(app, newStatus) {
-      try {
-        // Show loading
-        const buttons = document.querySelectorAll('.btn-approve, .btn-reject');
-        buttons.forEach(btn => {
-          btn.disabled = true;
-          btn.style.opacity = '0.5';
-        });
-
-        // Extract row index from ID
-        const rowIndex = parseInt(app.id.split('-')[1]);
-        
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: 'updateStatus',
-            course: app.course,
-            rowIndex: rowIndex,
-            status: newStatus
-          })
-        });
-
-        const result = await response.json();
-        
-        if (result.success) {
-          alert(`Permohonan telah ${newStatus}!`);
-          window.location.href = 'pageadmin.html';
-        } else {
-          alert('Ralat: ' + result.message);
-          // Re-enable buttons
-          buttons.forEach(btn => {
-            btn.disabled = false;
-            btn.style.opacity = '1';
-          });
-        }
-      } catch (error) {
-        console.error('Error updating status:', error);
-        alert('Ralat mengemas kini status. Sila cuba lagi.');
-        // Re-enable buttons
-        const buttons = document.querySelectorAll('.btn-approve, .btn-reject');
-        buttons.forEach(btn => {
-          btn.disabled = false;
-          btn.style.opacity = '1';
-        });
+        // TODO: Update status in Google Sheets
+        alert('Permohonan telah ditolak.');
+        window.location.href = 'pageadmin.html';
       }
     }
 
