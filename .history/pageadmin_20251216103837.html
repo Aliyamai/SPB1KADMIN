@@ -170,6 +170,35 @@
       padding-left: 12px;
     }
 
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.3s;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .filter-btn:hover {
+      border-color: #f97316;
+      color: #f97316;
+    }
+
+    .filter-btn.active {
+      background: #f97316;
+      color: white;
+      border-color: #f97316;
+    }
+
     .courses-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -184,7 +213,6 @@
       padding: 20px;
       transition: all 0.3s ease;
       cursor: pointer;
-      position: relative;
     }
 
     .course-card:hover {
@@ -196,7 +224,6 @@
     .course-card.selected {
       border-color: #f97316;
       background: #fff5ec;
-      box-shadow: 0 5px 15px rgba(249, 115, 22, 0.2);
     }
 
     .course-name {
@@ -229,66 +256,6 @@
 
     .course-stat.total {
       color: #64748b;
-    }
-
-    .click-hint {
-      margin-top: 12px;
-      font-size: 12px;
-      color: #94a3b8;
-      font-style: italic;
-    }
-
-    .course-card.selected .click-hint {
-      color: #f97316;
-      font-weight: 500;
-    }
-
-    .filter-buttons {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .filter-btn {
-      padding: 8px 16px;
-      border: 2px solid #e2e8f0;
-      background: white;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: 0.3s;
-      color: #64748b;
-      font-weight: 500;
-    }
-
-    .filter-btn:hover {
-      border-color: #f97316;
-      color: #f97316;
-    }
-
-    .filter-btn.active {
-      background: #f97316;
-      color: white;
-      border-color: #f97316;
-    }
-
-    .back-btn {
-      padding: 8px 16px;
-      border: 2px solid #f97316;
-      background: white;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: 0.3s;
-      color: #f97316;
-      font-weight: 500;
-      margin-bottom: 20px;
-    }
-
-    .back-btn:hover {
-      background: #f97316;
-      color: white;
     }
 
     .table-container {
@@ -406,10 +373,6 @@
       margin-bottom: 15px;
     }
 
-    .hidden {
-      display: none;
-    }
-
     footer {
       text-align: center;
       padding: 30px;
@@ -517,19 +480,17 @@
     <!-- Courses Overview Section -->
     <div class="section">
       <div class="section-header">
-        <h2 class="section-title">Pilih Kursus Untuk Lihat Permohonan</h2>
+        <h2 class="section-title">Ringkasan Mengikut Kursus</h2>
       </div>
       <div class="courses-grid" id="coursesGrid">
         <div class="loading">Memuatkan data kursus...</div>
       </div>
     </div>
 
-    <!-- Applications Table (Hidden by default) -->
-    <div class="section hidden" id="applicationsSection">
-      <button class="back-btn" onclick="closeApplicationsTable()">← Kembali ke Senarai Kursus</button>
-      
+    <!-- Applications Table -->
+    <div class="section">
       <div class="section-header">
-        <h2 class="section-title" id="courseTitle">Senarai Permohonan</h2>
+        <h2 class="section-title">Senarai Permohonan</h2>
         <div class="filter-buttons">
           <button class="filter-btn active" onclick="filterByStatus('semua')">Semua</button>
           <button class="filter-btn" onclick="filterByStatus('pending')">Pending</button>
@@ -544,6 +505,7 @@
             <tr>
               <th>No.</th>
               <th>Nama Pemohon</th>
+              <th>Kursus</th>
               <th>Tarikh Mohon</th>
               <th>Status</th>
               <th>Tindakan</th>
@@ -551,7 +513,7 @@
           </thead>
           <tbody id="tableBody">
             <tr>
-              <td colspan="5" class="loading">Memuatkan data...</td>
+              <td colspan="6" class="loading">Memuatkan data...</td>
             </tr>
           </tbody>
         </table>
@@ -681,7 +643,7 @@
           status_kesihatan: row[25] || '',
           masalah_kesihatan: row[26] || '',
           pengakuan: row[27] || '',
-          status: row[28] || 'pending'
+          status: row[28] || 'pending' // Assume status column is after all other fields
         };
         
         return app;
@@ -699,7 +661,7 @@
       }
       
       renderCoursesGrid();
-      updateStats();
+      renderTable();
     }
 
     // Get course statistics
@@ -755,7 +717,6 @@
                 <span>Jumlah: ${stat.total}</span>
               </div>
             </div>
-            <div class="click-hint">${isSelected ? '✓ Dipilih' : 'Klik untuk lihat permohonan →'}</div>
           </div>
         `;
       });
@@ -765,39 +726,14 @@
 
     // Filter by course
     function filterByCourse(courseName) {
-      currentCourseFilter = courseName;
-      currentStatusFilter = 'semua';
-      
-      // Reset filter buttons
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent === 'Semua') {
-          btn.classList.add('active');
-        }
-      });
+      if (currentCourseFilter === courseName) {
+        currentCourseFilter = null;
+      } else {
+        currentCourseFilter = courseName;
+      }
       
       renderCoursesGrid();
-      showApplicationsTable();
-    }
-
-    // Show applications table
-    function showApplicationsTable() {
-      document.getElementById('applicationsSection').classList.remove('hidden');
-      document.getElementById('courseTitle').textContent = `Senarai Permohonan - Kursus ${currentCourseFilter}`;
       renderTable();
-      
-      // Scroll to table
-      document.getElementById('applicationsSection').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // Close applications table
-    function closeApplicationsTable() {
-      currentCourseFilter = null;
-      document.getElementById('applicationsSection').classList.add('hidden');
-      renderCoursesGrid();
-      
-      // Scroll back to top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // Filter by status
@@ -817,7 +753,7 @@
       const tbody = document.getElementById('tableBody');
       tbody.innerHTML = '';
 
-      let filtered = allApplications.filter(app => app.course === currentCourseFilter);
+      let filtered = allApplications;
       
       // Filter by status
       if (currentStatusFilter !== 'semua') {
@@ -825,11 +761,16 @@
           (app.status || '').toLowerCase() === currentStatusFilter
         );
       }
+      
+      // Filter by course
+      if (currentCourseFilter) {
+        filtered = filtered.filter(app => app.course === currentCourseFilter);
+      }
 
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="5">
+            <td colspan="6">
               <div class="empty-state">
                 <div class="empty-state-icon">🔍</div>
                 <p>Tiada permohonan dijumpai</p>
@@ -853,6 +794,7 @@
         row.innerHTML = `
           <td>${index + 1}</td>
           <td>${name}</td>
+          <td>${app.course}</td>
           <td>${date}</td>
           <td><span class="status-badge ${statusClass}">${statusText}</span></td>
           <td>
@@ -868,6 +810,8 @@
         
         tbody.appendChild(row);
       });
+
+      updateStats();
     }
 
     // Update statistics
@@ -897,8 +841,84 @@
 
     // Application actions
     function viewApplication(app) {
-      // Store application data in sessionStorage
-      sessionStorage.setItem('viewing_application', JSON.stringify(app));
-      // Navigate to view page
-      window.location.href = 'view-application.html';
+      let details = '📋 MAKLUMAT PERMOHONAN\n';
+      details += '='.repeat(60) + '\n\n';
+      
+      details += `📌 MAKLUMAT KURSUS\n`;
+      details += `Kursus: ${app.course}\n`;
+      details += `Status: ${app.status}\n`;
+      details += `Tarikh Mohon: ${app.timestamp ? new Date(app.timestamp).toLocaleString('ms-MY') : '-'}\n\n`;
+      
+      details += `👤 MAKLUMAT PEMOHON\n`;
+      details += `Nama: ${app.nama}\n`;
+      details += `No K/P: ${app.no_kp}\n`;
+      details += `Jantina: ${app.jantina}\n`;
+      details += `Agama: ${app.agama}\n`;
+      details += `Warganegara: ${app.warganegara}\n`;
+      details += `Alamat: ${app.alamat}\n`;
+      details += `Tel Rumah: ${app.no_tel_rumah}\n`;
+      details += `Tel Bimbit: ${app.no_tel_bimbit}\n`;
+      details += `Email: ${app.email}\n\n`;
+      
+      details += `🎓 MAKLUMAT PENDIDIKAN\n`;
+      details += `Lulusan: ${app.lulusan}\n`;
+      details += `Keputusan: ${app.keputusan}\n`;
+      details += `Lain-lain: ${app.lain_lain}\n\n`;
+      
+      details += `👨 MAKLUMAT BAPA\n`;
+      details += `Nama: ${app.nama_bapa}\n`;
+      details += `No K/P: ${app.no_kp_bapa}\n`;
+      details += `Keturunan: ${app.keturunan_bapa}\n`;
+      details += `Pekerjaan: ${app.pekerjaan_bapa}\n`;
+      details += `Pendapatan: ${app.pendapatan_bapa}\n`;
+      details += `No Tel: ${app.no_tel_bapa}\n\n`;
+      
+      details += `👩 MAKLUMAT IBU\n`;
+      details += `Nama: ${app.nama_ibu}\n`;
+      details += `No K/P: ${app.no_kp_ibu}\n`;
+      details += `Keturunan: ${app.keturunan_ibu}\n`;
+      details += `Pekerjaan: ${app.pekerjaan_ibu}\n`;
+      details += `Pendapatan: ${app.pendapatan_ibu}\n`;
+      details += `No Tel: ${app.no_tel_ibu}\n\n`;
+      
+      details += `🏥 MAKLUMAT KESIHATAN\n`;
+      details += `Status Kesihatan: ${app.status_kesihatan}\n`;
+      details += `Masalah Kesihatan: ${app.masalah_kesihatan}\n\n`;
+      
+      details += `✅ PENGAKUAN\n`;
+      details += `${app.pengakuan}\n`;
+      
+      alert(details);
     }
+
+    function approveApplication(id) {
+      const app = allApplications.find(a => a.id === id);
+      if (app && confirm(`Terima permohonan daripada ${app.nama || app.name}?`)) {
+        app.status = 'diterima';
+        renderCoursesGrid();
+        renderTable();
+        alert('Permohonan telah diterima!');
+        // TODO: Update Google Sheets
+      }
+    }
+
+    function rejectApplication(id) {
+      const app = allApplications.find(a => a.id === id);
+      if (app && confirm(`Tolak permohonan daripada ${app.nama || app.name}?`)) {
+        app.status = 'ditolak';
+        renderCoursesGrid();
+        renderTable();
+        alert('Permohonan telah ditolak.');
+        // TODO: Update Google Sheets
+      }
+    }
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      if (checkAuthentication()) {
+        loadAllData();
+      }
+    });
+  </script>
+</body>
+</html>

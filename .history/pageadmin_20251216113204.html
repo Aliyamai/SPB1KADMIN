@@ -897,8 +897,34 @@
 
     // Application actions
     function viewApplication(app) {
-      // Store application data in sessionStorage
-      sessionStorage.setItem('viewing_application', JSON.stringify(app));
-      // Navigate to view page
-      window.location.href = 'view-application.html';
-    }
+      let details = '📋 MAKLUMAT PERMOHONAN\n';
+      details += '='.repeat(60) + '\n\n';
+      
+      details += `📌 MAKLUMAT KURSUS\n`;
+      details += `Kursus: ${app.course}\n`;
+      details += `Status: ${app.status}\n`;
+      details += `Tarikh Mohon: ${app.timestamp ? new Date(app.timestamp).toLocaleString('ms-MY') : '-'}\n\n`;
+      
+      details += `👤 MAKLUMAT PEMOHON\n`;
+      details += `Nama: ${app.nama}\n`;
+      details += `No K/P: ${app.no_kp}\n`;
+      details += `Jantina: ${app.jantina}\n`;
+      details += `Agama: ${app.agama}\n`;
+      details += `Warganegara: ${app.warganegara}\n`;
+      details += `Alamat: ${app.alamat}\n`;
+      details += `Tel Rumah: ${app.no_tel_rumah}\n`;
+      details += `Tel Bimbit: ${app.no_tel_bimbit}\n`;
+      details += `Email: ${app.email}\n\n`;
+      
+      details += `🎓 MAKLUMAT PENDIDIKAN\n`;
+      details += `Lulusan: ${app.lulusan}\n`;
+      details += `Keputusan: ${app.keputusan}\n`;
+      details += `Lain-lain: ${app.lain_lain}\n\n`;
+      
+      details += `👨 MAKLUMAT BAPA\n`;
+      details += `Nama: ${app.nama_bapa}\n`;
+      details += `No K/P: ${app.no_kp_bapa}\n`;
+      details += `Keturunan: ${app.keturunan_bapa}\n`;
+      details += `Pekerjaan: ${app.pekerjaan_bapa}\n`;
+      details += `Pendapatan: ${app.pendapatan_bapa}\n`;
+      details += `No Tel: ${app.no_tel_bapa}\n\n`;
