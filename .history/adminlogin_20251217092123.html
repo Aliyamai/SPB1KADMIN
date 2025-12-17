@@ -351,13 +351,13 @@
 
       <form id="loginForm" onsubmit="handleLogin(event)">
         <div class="form-group">
-          <label for="username">Username</label>
+          <label for="username">Nama Pengguna</label>
           <div class="input-wrapper">
             <span class="input-icon">👤</span>
             <input 
               type="text" 
               id="username" 
-              placeholder="Masukkan username"
+              placeholder="Masukkan nama pengguna"
               required
               autocomplete="username"
             >
@@ -400,12 +400,8 @@
   </div>
 
   <script>
-    // Google Apps Script Web App URL - CONNECTED TO GOOGLE SHEETS
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyt8bkgYG0MJBzrU5BTmZCOnClVBvt4ES8EU7oAVNgoirqR4_kXtT6gVcBz6A0dHwA/exec';
-    
     let isPasswordVisible = false;
 
-    // Toggle password visibility
     function togglePassword() {
       const passwordInput = document.getElementById('password');
       const toggleIcon = document.querySelector('.password-toggle');
@@ -415,7 +411,6 @@
       toggleIcon.textContent = isPasswordVisible ? '🙈' : '👁️';
     }
 
-    // Show error message
     function showError(message) {
       const errorDiv = document.getElementById('errorMessage');
       const errorText = document.getElementById('errorText');
@@ -427,7 +422,6 @@
       }, 5000);
     }
 
-    // Set loading state
     function setLoading(loading) {
       const btn = document.getElementById('loginBtn');
       const btnText = document.getElementById('btnText');
@@ -444,74 +438,35 @@
       }
     }
 
-    // Validate admin credentials from Google Sheets via Apps Script
-    async function validateAdmin(username, password) {
-      try {
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain',
-          },
-          body: JSON.stringify({
-            action: 'login',
-            username: username,
-            password: password
-          })
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP Error: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        
-        return {
-          success: result.success,
-          message: result.message,
-          user: result.data
-        };
-        
-      } catch (error) {
-        console.error('Error validating admin:', error);
-        return {
-          success: false,
-          message: 'Ralat sambungan ke server. Sila cuba lagi.'
-        };
-      }
-    }
-
-    // Handle login form submission
     async function handleLogin(event) {
       event.preventDefault();
       
-      const username = document.getElementById('username').value.trim();
+      const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
       const rememberMe = document.getElementById('rememberMe').checked;
 
-      if (!username || !password) {
-        showError('Sila masukkan username dan kata laluan');
-        return;
-      }
-
       setLoading(true);
 
-      // Validate credentials against Google Sheets
-      const result = await validateAdmin(username, password);
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      if (result.success) {
-        // Save login state and user info
-        const storage = rememberMe ? localStorage : sessionStorage;
-        storage.setItem('tvet_admin_logged_in', 'true');
-        storage.setItem('tvet_admin_username', result.user.username);
-        storage.setItem('tvet_admin_name', result.user.name);
-        storage.setItem('tvet_admin_email', result.user.email);
-        storage.setItem('tvet_admin_role', result.user.role);
+      // Simple authentication (replace with real authentication)
+      // Default credentials: admin / admin123
+      if (username === 'admin' && password === 'admin123') {
+        // Save login state
+        if (rememberMe) {
+          localStorage.setItem('tvet_admin_logged_in', 'true');
+          localStorage.setItem('tvet_admin_username', username);
+        } else {
+          sessionStorage.setItem('tvet_admin_logged_in', 'true');
+          sessionStorage.setItem('tvet_admin_username', username);
+        }
 
         // Redirect to dashboard
-        window.location.href = 'pageadmin.html';
+        window.location.href = 'admin-dashboard.html';
       } else {
         setLoading(false);
-        showError(result.message || 'Login gagal. Sila cuba lagi.');
+        showError('Nama pengguna atau kata laluan tidak sah!');
         
         // Clear password field
         document.getElementById('password').value = '';
@@ -524,7 +479,7 @@
                       sessionStorage.getItem('tvet_admin_logged_in');
       
       if (loggedIn === 'true') {
-        window.location.href = 'pageadmin.html';
+        window.location.href = 'admin-dashboard.html';
       }
 
       // Load saved username if remember me was checked
@@ -535,17 +490,11 @@
       }
     });
 
-    // Handle Enter key on username field
-    document.addEventListener('DOMContentLoaded', () => {
-      const usernameField = document.getElementById('username');
-      const passwordField = document.getElementById('password');
-      
-      usernameField.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          passwordField.focus();
-        }
-      });
+    // Handle Enter key on inputs
+    document.getElementById('username').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('password').focus();
+      }
     });
   </script>
 </body>
