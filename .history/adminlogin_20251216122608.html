@@ -400,6 +400,9 @@
   </div>
 
   <script>
+    // Google Apps Script Web App URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwFaX8iZ8QhLcMOT-sWTYl0p0w9UJYgQmY-EZo8xn6x23Q96eVu5pus4GGTW_WjkR7y/exec'; // Replace with your deployed web app URL
+    
     let isPasswordVisible = false;
 
     function togglePassword() {
@@ -438,6 +441,59 @@
       }
     }
 
+    // Fetch admin data from Google Sheets via Apps Script
+    async function validateAdmin(username, password) {
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'login',
+            username: username,
+            password: password
+          })
+        });
+        
+        // Note: no-cors mode doesn't allow reading response
+        // We'll use a different approach with redirect parameter
+        const responseWithRedirect = await fetch(SCRIPT_URL + '?action=login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain',
+          },
+          body: JSON.stringify({
+            action: 'login',
+            username: username,
+            password: password
+          })
+        });
+        
+        const result = await responseWithRedirect.json();
+        
+        if (result.success) {
+          return {
+            success: true,
+            user: result.data
+          };
+        } else {
+          return {
+            success: false,
+            message: result.message
+          };
+        }
+        
+      } catch (error) {
+        console.error('Error validating admin:', error);
+        return {
+          success: false,
+          message: 'Ralat sambungan. Sila cuba lagi.'
+        };
+      }
+    }
+
     async function handleLogin(event) {
       event.preventDefault();
       
@@ -447,26 +503,23 @@
 
       setLoading(true);
 
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Validate credentials against Google Sheets
+      const result = await validateAdmin(username, password);
 
-      // Simple authentication (replace with real authentication)
-      // Default credentials: admin / admin123
-      if (username === 'admin' && password === 'admin123') {
-        // Save login state
-        if (rememberMe) {
-          localStorage.setItem('tvet_admin_logged_in', 'true');
-          localStorage.setItem('tvet_admin_username', username);
-        } else {
-          sessionStorage.setItem('tvet_admin_logged_in', 'true');
-          sessionStorage.setItem('tvet_admin_username', username);
-        }
+      if (result.success) {
+        // Save login state and user info
+        const storage = rememberMe ? localStorage : sessionStorage;
+        storage.setItem('tvet_admin_logged_in', 'true');
+        storage.setItem('tvet_admin_username', result.user.username);
+        storage.setItem('tvet_admin_name', result.user.name);
+        storage.setItem('tvet_admin_email', result.user.email);
+        storage.setItem('tvet_admin_role', result.user.role);
 
         // Redirect to dashboard
-        window.location.href = 'admin-dashboard.html';
+        window.location.href = 'pageadmin.html';
       } else {
         setLoading(false);
-        showError('Nama pengguna atau kata laluan tidak sah!');
+        showError(result.message);
         
         // Clear password field
         document.getElementById('password').value = '';
@@ -479,7 +532,7 @@
                       sessionStorage.getItem('tvet_admin_logged_in');
       
       if (loggedIn === 'true') {
-        window.location.href = 'admin-dashboard.html';
+        window.location.href = 'pageadmin.html';
       }
 
       // Load saved username if remember me was checked

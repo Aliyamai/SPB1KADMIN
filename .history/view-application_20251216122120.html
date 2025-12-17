@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lihat Permohonan - TVET Perantisan</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      background: #fffffe;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .logo img {
+      height: 70px;
+      width: auto;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-back {
+      background: #64748b;
+      color: white;
+    }
+
+    .btn-back:hover {
+      background: #475569;
+    }
+
+    .btn-print {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-print:hover {
+      background: #2563eb;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 30px auto;
+      padding-bottom: 50px;
+    }
+
+    .page-header {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-title {
+      font-size: 28px;
+      color: #1e293b;
+      border-left: 6px solid #f97316;
+      padding-left: 15px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-approved {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      color: #1e293b;
+      border-left: 5px solid #f97316;
+      padding-left: 12px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-icon {
+      font-size: 24px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .info-item {
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 3px solid #f97316;
+    }
+
+    .info-label {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-size: 15px;
+      color: #1e293b;
+      font-weight: 500;
+    }
+
+    .info-value.empty {
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 2px solid #e2e8f0;
+    }
+
+    .btn-approve {
+      background: #10b981;
+      color: white;
+      padding: 12px 30px;
+      font-size: 15px;
+    }
+
+    .btn-approve:hover {
+      background: #059669;
+    }
+
+    .btn-reject {
+      background: #ef4444;
+      color: white;
+      padding: 12px 30px;
+      font-size: 15px;
+    }
+
+    .btn-reject:hover {
+      background: #dc2626;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #64748b;
+      font-size: 18px;
+    }
+
+    .error {
+      text-align: center;
+      padding: 60px 20px;
+      color: #ef4444;
+    }
+
+    .error-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    @media print {
+      header, .header-actions, .action-buttons, .btn-back, .btn-print {
+        display: none !important;
+      }
+
+      body {
+        background: white;
+      }
+
+      .section {
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
+        page-break-inside: avoid;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 15px 20px;
+      }
+
+      .container {
+        width: 95%;
+      }
+
+      .page-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <img src="assets/images/skimperantisan.png" alt="Logo TVET" onerror="this.style.display='none'">
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-print" onclick="window.print()">🖨️ Cetak</button>
+      <a href="pageadmin.html" class="btn btn-back">← Kembali</a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="container" id="mainContent">
+    <div class="loading">⏳ Memuatkan maklumat permohonan...</div>
+  </div>
+
+  <script>
+    // Google Apps Script Web App URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwFaX8iZ8QhLcMOT-sWTYl0p0w9UJYgQmY-EZo8xn6x23Q96eVu5pus4GGTW_WjkR7y/exec'; // Replace with your deployed Apps Script URL
+    
+    // Load application data
+    function loadApplicationData() {
+      const appData = sessionStorage.getItem('viewing_application');
+      
+      if (!appData) {
+        showError();
+        return;
+      }
+
+      try {
+        const app = JSON.parse(appData);
+        renderApplication(app);
+      } catch (error) {
+        console.error('Error parsing application data:', error);
+        showError();
+      }
+    }
+
+    // Show error message
+    function showError() {
+      document.getElementById('mainContent').innerHTML = `
+        <div class="error">
+          <div class="error-icon">⚠️</div>
+          <h2>Permohonan Tidak Dijumpai</h2>
+          <p>Data permohonan tidak dapat dimuatkan.</p>
+          <a href="pageadmin.html" class="btn btn-back" style="margin-top: 20px;">← Kembali ke Dashboard</a>
+        </div>
+      `;
+    }
+
+    // Render application details
+    function renderApplication(app) {
+      const status = (app.status || 'pending').toLowerCase();
+      const statusClass = `status-${status === 'diterima' ? 'approved' : status === 'ditolak' ? 'rejected' : 'pending'}`;
+      const statusText = status.charAt(0).toUpperCase() + status.slice(1);
+
+      const html = `
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 class="page-title">Maklumat Permohonan</h1>
+          <span class="status-badge ${statusClass}">${statusText}</span>
+        </div>
+
+        <!-- Course Info Section -->
+        <div class="section">
+          <h2 class="section-title">
+            <span class="section-icon">📌</span>
+            Maklumat Kursus
+          </h2>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Kursus Dipohon</div>
+              <div class="info-value">${app.course || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Tarikh Permohonan</div>
+              <div class="info-value">${app.timestamp ? new Date(app.timestamp).toLocaleString('ms-MY', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              }) : '-'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Personal Info Section -->
+        <div class="section">
+          <h2 class="section-title">
+            <span class="section-icon">👤</span>
+            Maklumat Pemohon
+          </h2>
+          <div class="info-grid">
+            <div class="info-item full-width">
+              <div class="info-label">Nama Penuh</div>
+              <div class="info-value">${app.nama || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">No. Kad Pengenalan</div>
+              <div class="info-value">${app.no_kp || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Jantina</div>
+              <div class="info-value">${app.jantina || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Agama</div>
+              <div class="info-value">${app.agama || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Warganegara</div>
+              <div class="info-value">${app.warganegara || '-'}</div>
+            </div>
+            <div class="info-item full-width">
+              <div class="info-label">Alamat</div>
+              <div class="info-value">${app.alamat || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">No. Tel Rumah</div>
+              <div class="info-value">${app.no_tel_rumah || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">No. Tel Bimbit</div>
+              <div class="info-value">${app.no_tel_bimbit || '-'}</div>
+            </div>
+            <div class="info-item full-width">
+              <div class="info-label">Emel</div>
+              <div class="info-value">${app.email || '-'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Education Info Section -->
+        <div class="section">
+          <h2 class="section-title">
+            <span class="section-icon">🎓</span>
+            Maklumat Pendidikan
+          </h2>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Lulusan</div>
+              <div class="info-value">${app.lulusan || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Keputusan</div>
+              <div class="info-value">${app.keputusan || '-'}</div>
+            </div>
+            <div class="info-item full-width">
+              <div class="info-label">Lain-lain Maklumat</div>
+              <div class="info-value ${!app.lain_lain || app.lain_lain === '-' ? 'empty' : ''}">${app.lain_lain || 'Tiada maklumat tambahan'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Father Info Section -->
+        <div class="section">
+          <h2 class="section-title">
+            <span class="section-icon">👨</span>
+            Maklumat Bapa
+          </h2>
+          <div class="info-grid">
+            <div class="info-item full-width">
+              <div class="info-label">Nama Bapa</div>
+              <div class="info-value">${app.nama_bapa || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">No. Kad Pengenalan</div>
+              <div class="info-value">${app.no_kp_bapa || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Keturunan</div>
+              <div class="info-value">${app.keturunan_bapa || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Pekerjaan</div>
+              <div class="info-value">${app.pekerjaan_bapa || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Pendapatan Bulanan</div>
+              <div class="info-value">${app.pendapatan_bapa || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">No. Telefon</div>
+              <div class="info-value">${app.no_tel_bapa || '-'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mother Info Section -->
+        <div class="section">
+          <h2 class="section-title">
+            <span class="section-icon">👩</span>
+            Maklumat Ibu
+          </h2>
+          <div class="info-grid">
+            <div class="info-item full-width">
+              <div class="info-label">Nama Ibu</div>
+              <div class="info-value">${app.nama_ibu || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">No. Kad Pengenalan</div>
+              <div class="info-value">${app.no_kp_ibu || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Keturunan</div>
+              <div class="info-value">${app.keturunan_ibu || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Pekerjaan</div>
+              <div class="info-value">${app.pekerjaan_ibu || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Pendapatan Bulanan</div>
+              <div class="info-value">${app.pendapatan_ibu || '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">No. Telefon</div>
+              <div class="info-value">${app.no_tel_ibu || '-'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Health Info Section -->
+        <div class="section">
+          <h2 class="section-title">
+            <span class="section-icon">🏥</span>
+            Maklumat Kesihatan
+          </h2>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Status Kesihatan</div>
+              <div class="info-value">${app.status_kesihatan || '-'}</div>
+            </div>
+            <div class="info-item full-width">
+              <div class="info-label">Masalah Kesihatan (jika ada)</div>
+              <div class="info-value ${!app.masalah_kesihatan || app.masalah_kesihatan === '-' ? 'empty' : ''}">${app.masalah_kesihatan || 'Tiada masalah kesihatan'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Declaration Section -->
+        <div class="section">
+          <h2 class="section-title">
+            <span class="section-icon">✅</span>
+            Pengakuan
+          </h2>
+          <div class="info-item full-width">
+            <div class="info-value">${app.pengakuan || '-'}</div>
+          </div>
+        </div>
+
+        ${status === 'pending' ? `
+        <!-- Action Buttons (only for pending applications) -->
+        <div class="action-buttons">
+          <button class="btn btn-approve" onclick="approveApplication()">✓ Terima Permohonan</button>
+          <button class="btn btn-reject" onclick="rejectApplication()">✗ Tolak Permohonan</button>
+        </div>
+        ` : ''}
+      `;
+
+      document.getElementById('mainContent').innerHTML = html;
+    }
+
+    // Approve application
+    async function approveApplication() {
+      const appData = sessionStorage.getItem('viewing_application');
+      const app = JSON.parse(appData);
+      
+      if (confirm(`Adakah anda pasti ingin menerima permohonan daripada ${app.nama}?`)) {
+        await updateStatus(app, 'diterima');
+      }
+    }
+
+    // Reject application
+    async function rejectApplication() {
+      const appData = sessionStorage.getItem('viewing_application');
+      const app = JSON.parse(appData);
+      
+      if (confirm(`Adakah anda pasti ingin menolak permohonan daripada ${app.nama}?`)) {
+        await updateStatus(app, 'ditolak');
+      }
+    }
+
+    // Update status in Google Sheets
+    async function updateStatus(app, newStatus) {
+      try {
+        // Show loading
+        const buttons = document.querySelectorAll('.btn-approve, .btn-reject');
+        buttons.forEach(btn => {
+          btn.disabled = true;
+          btn.style.opacity = '0.5';
+        });
+
+        // Extract row index from ID
+        const rowIndex = parseInt(app.id.split('-')[1]);
+        
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'updateStatus',
+            course: app.course,
+            rowIndex: rowIndex,
+            status: newStatus
+          })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          alert(`Permohonan telah ${newStatus}!`);
+          window.location.href = 'pageadmin.html';
+        } else {
+          alert('Ralat: ' + result.message);
+          // Re-enable buttons
+          buttons.forEach(btn => {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+          });
+        }
+      } catch (error) {
+        console.error('Error updating status:', error);
+        alert('Ralat mengemas kini status. Sila cuba lagi.');
+        // Re-enable buttons
+        const buttons = document.querySelectorAll('.btn-approve, .btn-reject');
+        buttons.forEach(btn => {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        });
+      }
+    }
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', loadApplicationData);
+  </script>
+</body>
+</html>
