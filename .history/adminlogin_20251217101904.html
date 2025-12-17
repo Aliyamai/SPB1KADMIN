@@ -422,7 +422,7 @@
     // ============================================
     // CONFIGURATION
     // ============================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUiQBh6B9NF-5vbN1b4ziy27jnvXkoPRViZk9Q0FdzHLTIkcslX1qWfL0C0mtGPgVF/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmp-mbXMNQ2XI-41IxHkiU0Q-jOvRx7FfFISegE4sT0OBOW5ACyTH02Q2m4SdfWEdx/exec';
     
     let isPasswordVisible = false;
 
@@ -484,16 +484,42 @@
     }
 
     // ============================================
-    // AUTHENTICATION - JSONP METHOD (CORS-FREE)
+    // AUTHENTICATION - IFRAME METHOD (CORS-FREE)
     // ============================================
     
     function validateAdmin(username, password) {
       return new Promise((resolve) => {
         console.log('🔐 Attempting login for:', username);
-        console.log('🔗 Using JSONP method (CORS-free)');
+        console.log('🔗 Using CORS-free iframe method');
         
-        // Create unique callback name
-        const callbackName = 'loginCallback_' + Date.now();
+        // Create hidden iframe
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.name = 'login_frame_' + Date.now();
+        document.body.appendChild(iframe);
+        
+        // Create form
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = SCRIPT_URL;
+        form.target = iframe.name;
+        
+        // Add hidden fields
+        const fields = {
+          action: 'login',
+          username: username,
+          password: password
+        };
+        
+        for (let key in fields) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = fields[key];
+          form.appendChild(input);
+        }
+        
+        document.body.appendChild(form);
         
         // Set timeout
         const timeout = setTimeout(() => {
@@ -503,78 +529,38 @@
             success: false,
             message: 'Timeout - sila cuba lagi'
           });
-        }, 15000);
+        }, 15000); // 15 second timeout
         
-        // Create global callback
-        window[callbackName] = function(result) {
-          clearTimeout(timeout);
-          console.log('📡 Response received:', result);
-          cleanup();
-          resolve(result);
-        };
-        
-        // Create script tag for JSONP
-        const script = document.createElement('script');
-        
-        // Encode parameters
-        const params = new URLSearchParams({
-          action: 'login',
-          username: username,
-          password: password,
-          callback: callbackName
-        });
-        
-        script.src = SCRIPT_URL + '?' + params.toString();
-        script.onerror = function() {
-          console.log('❌ Script load error - trying POST method');
-          clearTimeout(timeout);
-          cleanup();
-          // Fallback to POST with form submission
-          validateAdminPost(username, password).then(resolve);
+        // Handle response
+        iframe.onload = function() {
+          try {
+            clearTimeout(timeout);
+            const content = iframe.contentWindow.document.body.textContent;
+            console.log('📡 Response received:', content);
+            
+            const result = JSON.parse(content);
+            console.log('✅ Parsed result:', result);
+            
+            cleanup();
+            resolve(result);
+          } catch (error) {
+            console.error('❌ Parse error:', error);
+            cleanup();
+            resolve({
+              success: false,
+              message: 'Ralat membaca response dari server'
+            });
+          }
         };
         
         function cleanup() {
-          if (window[callbackName]) delete window[callbackName];
-          if (script.parentNode) script.parentNode.removeChild(script);
+          if (document.body.contains(form)) document.body.removeChild(form);
+          if (document.body.contains(iframe)) document.body.removeChild(iframe);
         }
         
-        console.log('📤 Sending request...');
-        document.head.appendChild(script);
-      });
-    }
-    
-    // Fallback: POST with form redirect
-    function validateAdminPost(username, password) {
-      return new Promise((resolve) => {
-        console.log('🔄 Using POST redirect method');
-        
-        // Simulate successful login for testing
-        // In production, this would redirect to Apps Script page
-        const testCredentials = {
-          username: 'admin',
-          password: 'admin123'
-        };
-        
-        setTimeout(() => {
-          if (username === testCredentials.username && 
-              password === testCredentials.password) {
-            resolve({
-              success: true,
-              message: 'Login berjaya',
-              data: {
-                username: username,
-                name: 'Admin User',
-                email: 'admin@tvet.com',
-                role: 'Admin'
-              }
-            });
-          } else {
-            resolve({
-              success: false,
-              message: 'Username atau kata laluan tidak sah!'
-            });
-          }
-        }, 500);
+        // Submit form
+        console.log('📤 Submitting login request...');
+        form.submit();
       });
     }
 
