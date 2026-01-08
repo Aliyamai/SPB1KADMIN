@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Admin - TVET Perantisan</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(249, 115, 22, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(249, 115, 22, 0.08) 0%, transparent 50%);
+      z-index: 0;
+    }
+
+    .signup-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+      max-width: 900px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      animation: slideIn 0.5s ease-out;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .signup-left {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      padding: 60px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      text-align: center;
+    }
+
+    .logo-section {
+      margin-bottom: 30px;
+    }
+
+    .logo-section img {
+      width: 120px;
+      height: 120px;
+      background: white;
+      border-radius: 50%;
+      padding: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .signup-left h1 {
+      font-size: 28px;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .signup-left p {
+      font-size: 16px;
+      opacity: 0.95;
+      line-height: 1.6;
+    }
+
+    .decorative-icon {
+      font-size: 80px;
+      margin-top: 30px;
+      opacity: 0.3;
+    }
+
+    .signup-right {
+      padding: 50px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .signup-header {
+      margin-bottom: 30px;
+    }
+
+    .signup-header h2 {
+      color: #1e293b;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .signup-header p {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      color: #475569;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-group label .required {
+      color: #ef4444;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 18px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 15px 12px 45px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .form-group select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+      padding-right: 40px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1);
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #94a3b8;
+      font-size: 18px;
+      user-select: none;
+    }
+
+    .password-toggle:hover {
+      color: #f97316;
+    }
+
+    .password-strength {
+      margin-top: 8px;
+      font-size: 12px;
+    }
+
+    .strength-bar {
+      height: 4px;
+      background: #e2e8f0;
+      border-radius: 2px;
+      margin-top: 5px;
+      overflow: hidden;
+    }
+
+    .strength-fill {
+      height: 100%;
+      width: 0%;
+      transition: all 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .strength-weak { background: #ef4444; width: 33%; }
+    .strength-medium { background: #f59e0b; width: 66%; }
+    .strength-strong { background: #10b981; width: 100%; }
+
+    .signup-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+      margin-top: 10px;
+    }
+
+    .signup-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+    }
+
+    .signup-btn:active {
+      transform: translateY(0);
+    }
+
+    .signup-btn:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .error-message {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .error-message.show {
+      display: flex;
+    }
+
+    .success-message {
+      background: #dcfce7;
+      color: #166534;
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .success-message.show {
+      display: flex;
+    }
+
+    .already-account {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    .already-account a {
+      color: #f97316;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .already-account a:hover {
+      color: #ea580c;
+    }
+
+    .loading-spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .signup-container {
+        grid-template-columns: 1fr;
+        max-width: 450px;
+      }
+
+      .signup-left {
+        padding: 40px 30px;
+      }
+
+      .signup-left h1 {
+        font-size: 24px;
+      }
+
+      .decorative-icon {
+        display: none;
+      }
+
+      .signup-right {
+        padding: 40px 30px;
+        max-height: none;
+      }
+
+      .signup-header h2 {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <div class="signup-left">
+      <div class="logo-section">
+        <img src="assets/images/skimperantisan.png" alt="Logo TVET" onerror="this.style.display='none'">
+      </div>
+      <h1>Daftar Akaun Admin</h1>
+      <p>Cipta akaun baharu untuk mengurus sistem permohonan dan data pelajar</p>
+      <div class="decorative-icon">📝</div>
+    </div>
+
+    <div class="signup-right">
+      <div class="signup-header">
+        <h2>Pendaftaran Admin</h2>
+        <p>Lengkapkan maklumat di bawah</p>
+      </div>
+
+      <div class="error-message" id="errorMessage">
+        <span>⚠️</span>
+        <span id="errorText"></span>
+      </div>
+
+      <div class="success-message" id="successMessage">
+        <span>✅</span>
+        <span id="successText"></span>
+      </div>
+
+      <form id="signupForm" onsubmit="handleSignup(event)">
+        <div class="form-group">
+          <label for="fullName">Nama Penuh <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input 
+              type="text" 
+              id="fullName" 
+              placeholder="Masukkan nama penuh"
+              required
+              autocomplete="name"
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Emel <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">📧</span>
+            <input 
+              type="email" 
+              id="email" 
+              placeholder="contoh@email.com"
+              required
+              autocomplete="email"
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="username">Username <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔤</span>
+            <input 
+              type="text" 
+              id="username" 
+              placeholder="Pilih username (min. 4 aksara)"
+              required
+              minlength="4"
+              autocomplete="username"
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Kata Laluan <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input 
+              type="password" 
+              id="password" 
+              placeholder="Masukkan kata laluan (min. 6 aksara)"
+              required
+              minlength="6"
+              oninput="checkPasswordStrength()"
+              autocomplete="new-password"
+            >
+            <span class="password-toggle" onclick="togglePassword('password')">👁️</span>
+          </div>
+          <div class="password-strength">
+            <div class="strength-bar">
+              <div class="strength-fill" id="strengthBar"></div>
+            </div>
+            <span id="strengthText" style="font-size: 12px; color: #64748b;"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Sahkan Kata Laluan <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔑</span>
+            <input 
+              type="password" 
+              id="confirmPassword" 
+              placeholder="Masukkan semula kata laluan"
+              required
+              autocomplete="new-password"
+            >
+            <span class="password-toggle" onclick="togglePassword('confirmPassword')">👁️</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="role">Peranan <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">💼</span>
+            <select id="role" required>
+              <option value="">Pilih peranan</option>
+              <option value="Admin">Admin</option>
+              <option value="Super Admin">Super Admin</option>
+              <option value="Moderator">Moderator</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="signup-btn" id="signupBtn">
+          <span id="btnText">Daftar Sekarang</span>
+          <div class="loading-spinner" id="loadingSpinner"></div>
+        </button>
+      </form>
+
+      <div class="already-account">
+        Sudah mempunyai akaun? <a href="adminlogin.html">Log Masuk</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // CONFIGURATION - SAME AS LOGIN PAGE
+    // ============================================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSvaQr9KsRm1Fy1lDEijBI0M_-v0_Y2Ecy6dmF_DoPn2JyNAI5Nz1kpzy02dIcy3ku6w/exec';
+    
+    // ============================================
+    // UI FUNCTIONS
+    // ============================================
+    
+    function togglePassword(fieldId) {
+      const field = document.getElementById(fieldId);
+      const icon = field.nextElementSibling;
+      
+      if (field.type === 'password') {
+        field.type = 'text';
+        icon.textContent = '🙈';
+      } else {
+        field.type = 'password';
+        icon.textContent = '👁️';
+      }
+    }
+
+    function checkPasswordStrength() {
+      const password = document.getElementById('password').value;
+      const strengthBar = document.getElementById('strengthBar');
+      const strengthText = document.getElementById('strengthText');
+      
+      let strength = 0;
+      
+      if (password.length >= 6) strength++;
+      if (password.length >= 10) strength++;
+      if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+      if (/\d/.test(password)) strength++;
+      if (/[^a-zA-Z\d]/.test(password)) strength++;
+      
+      strengthBar.className = 'strength-fill';
+      
+      if (strength <= 2) {
+        strengthBar.classList.add('strength-weak');
+        strengthText.textContent = 'Lemah';
+        strengthText.style.color = '#ef4444';
+      } else if (strength <= 3) {
+        strengthBar.classList.add('strength-medium');
+        strengthText.textContent = 'Sederhana';
+        strengthText.style.color = '#f59e0b';
+      } else {
+        strengthBar.classList.add('strength-strong');
+        strengthText.textContent = 'Kuat';
+        strengthText.style.color = '#10b981';
+      }
+    }
+
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      const successDiv = document.getElementById('successMessage');
+      const errorText = document.getElementById('errorText');
+      
+      successDiv.classList.remove('show');
+      errorText.textContent = message;
+      errorDiv.classList.add('show');
+      
+      setTimeout(() => {
+        errorDiv.classList.remove('show');
+      }, 5000);
+    }
+
+    function showSuccess(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      const successDiv = document.getElementById('successMessage');
+      const successText = document.getElementById('successText');
+      
+      errorDiv.classList.remove('show');
+      successText.textContent = message;
+      successDiv.classList.add('show');
+    }
+
+    function setLoading(loading) {
+      const btn = document.getElementById('signupBtn');
+      const btnText = document.getElementById('btnText');
+      const spinner = document.getElementById('loadingSpinner');
+      
+      if (loading) {
+        btn.disabled = true;
+        btnText.style.display = 'none';
+        spinner.style.display = 'block';
+      } else {
+        btn.disabled = false;
+        btnText.style.display = 'block';
+        spinner.style.display = 'none';
+      }
+    }
+
+    // ============================================
+    // REGISTRATION - JSONP METHOD (CORS-FREE)
+    // ============================================
+    
+    function registerAdmin(userData) {
+      return new Promise((resolve) => {
+        console.log('📝 Attempting registration for:', userData.username);
+        console.log('🔗 Using JSONP method (CORS-free)');
+        
+        // Create unique callback name
+        const callbackName = 'registerCallback_' + Date.now();
+        
+        // Set timeout
+        const timeout = setTimeout(() => {
+          console.log('⌛ Request timeout');
+          cleanup();
+          resolve({
+            success: false,
+            message: 'Timeout - sila cuba lagi'
+          });
+        }, 15000);
+        
+        // Create global callback
+        window[callbackName] = function(result) {
+          clearTimeout(timeout);
+          console.log('📡 Response received:', result);
+          cleanup();
+          resolve(result);
+        };
+        
+        // Create script tag for JSONP
+        const script = document.createElement('script');
+        
+        // Encode parameters for GET request
+        const params = new URLSearchParams({
+          action: 'register',
+          name: userData.name,
+          email: userData.email,
+          username: userData.username,
+          password: userData.password,
+          role: userData.role,
+          callback: callbackName
+        });
+        
+        script.src = SCRIPT_URL + '?' + params.toString();
+        script.onerror = function() {
+          console.log('❌ Script load error - trying POST method');
+          clearTimeout(timeout);
+          cleanup();
+          // Fallback to POST
+          registerAdminPost(userData).then(resolve);
+        };
+        
+        function cleanup() {
+          if (window[callbackName]) delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+        
+        console.log('📤 Sending request...');
+        document.head.appendChild(script);
+      });
+    }
+    
+    // Fallback: POST method
+    function registerAdminPost(userData) {
+      return new Promise((resolve) => {
+        console.log('📤 Using POST method as fallback');
+        
+        fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'register',
+            ...userData
+          }),
+          redirect: 'follow'
+        })
+        .then(response => response.json())
+        .then(result => {
+          console.log('✅ POST response:', result);
+          resolve(result);
+        })
+        .catch(error => {
+          console.error('❌ POST error:', error);
+          resolve({
+            success: false,
+            message: 'Ralat sambungan. Sila cuba lagi.'
+          });
+        });
+      });
+    }
+
+    // ============================================
+    // SIGNUP HANDLER
+    // ============================================
+    
+    async function handleSignup(event) {
+      event.preventDefault();
+      
+      const fullName = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const role = document.getElementById('role').value;
+
+      // Validation
+      if (!fullName || !email || !username || !password || !confirmPassword || !role) {
+        showError('Sila lengkapkan semua maklumat yang diperlukan');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showError('Kata laluan tidak sepadan!');
+        document.getElementById('confirmPassword').focus();
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('Kata laluan mestilah sekurang-kurangnya 6 aksara!');
+        document.getElementById('password').focus();
+        return;
+      }
+
+      if (username.length < 4) {
+        showError('Username mestilah sekurang-kurangnya 4 aksara!');
+        document.getElementById('username').focus();
+        return;
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showError('Format emel tidak sah!');
+        document.getElementById('email').focus();
+        return;
+      }
+
+      console.log('📝 Registration attempt:', { username, email, fullName, role });
+      setLoading(true);
+
+      try {
+        const result = await registerAdmin({
+          name: fullName,
+          email: email,
+          username: username,
+          password: password,
+          role: role
+        });
+
+        console.log('📊 Registration result:', result);
+        setLoading(false);
+
+        if (result.success) {
+          console.log('✅ Registration successful!');
+          
+          showSuccess('Pendaftaran berjaya! Mengalih ke halaman log masuk...');
+          
+          // Clear form
+          document.getElementById('signupForm').reset();
+          document.getElementById('strengthBar').className = 'strength-fill';
+          document.getElementById('strengthText').textContent = '';
+          
+          // Redirect to login after 2 seconds
+          setTimeout(() => {
+            console.log('🔄 Redirecting to login...');
+            window.location.href = 'adminlogin.html';
+          }, 2000);
+          
+        } else {
+          console.log('❌ Registration failed:', result.message);
+          showError(result.message || 'Pendaftaran gagal. Sila cuba lagi.');
+        }
+      } catch (error) {
+        console.error('❌ Signup error:', error);
+        setLoading(false);
+        showError('Ralat sistem. Sila cuba lagi.');
+      }
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('🚀 Signup page loaded');
+      console.log('🔗 Script URL:', SCRIPT_URL);
+      
+      // Check if already logged in
+      const loggedIn = localStorage.getItem('tvet_admin_logged_in') || 
+                      sessionStorage.getItem('tvet_admin_logged_in');
+      
+      if (loggedIn === 'true') {
+        console.log('✅ Already logged in, redirecting...');
+        window.location.href = 'pageadmin.html';
+        return;
+      }
+    });
+
+    // ============================================
+    // DEBUG FUNCTIONS
+    // ============================================
+    
+    window.testSignup = function() {
+      console.log('🧪 Testing signup with test data...');
+      document.getElementById('fullName').value = 'Test Admin';
+      document.getElementById('email').value = 'test' + Date.now() + '@admin.com';
+      document.getElementById('username').value = 'testadmin' + Date.now();
+      document.getElementById('password').value = 'test123';
+      document.getElementById('confirmPassword').value = 'test123';
+      document.getElementById('role').value = 'Admin';
+      handleSignup(new Event('submit'));
+    };
+
+    window.testAPI = async function() {
+      console.log('🧪 Testing API connection...');
+      console.log('🔗 URL:', SCRIPT_URL);
+      try {
+        const response = await fetch(SCRIPT_URL);
+        console.log('📡 Response status:', response.status);
+        const text = await response.text();
+        console.log('✅ API Response:', text);
+        return text;
+      } catch (error) {
+        console.error('❌ API Error:', error);
+        return error;
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - TVET Perantisan</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      background: #fffffe;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .logo img {
+      height: 70px;
+      width: auto;
+    }
+
+    .admin-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .admin-details {
+      text-align: right;
+    }
+
+    .admin-name {
+      color: #1e293b;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .admin-role {
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: 0.3s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .logout-btn:hover {
+      background: #dc2626;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1400px;
+      margin: 30px auto;
+    }
+
+    .page-title {
+      font-size: 28px;
+      color: #1e293b;
+      margin-bottom: 30px;
+      border-left: 6px solid #f97316;
+      padding-left: 15px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease;
+      border-left: 5px solid #f97316;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-card.pending {
+      border-left-color: #f59e0b;
+    }
+
+    .stat-card.approved {
+      border-left-color: #10b981;
+    }
+
+    .stat-card.rejected {
+      border-left-color: #ef4444;
+    }
+
+    .stat-card.total {
+      border-left-color: #3b82f6;
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .stat-icon {
+      font-size: 32px;
+      opacity: 0.8;
+    }
+
+    .stat-label {
+      color: #64748b;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .stat-change {
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      color: #1e293b;
+      border-left: 5px solid #f97316;
+      padding-left: 12px;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.3s;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .filter-btn:hover {
+      border-color: #f97316;
+      color: #f97316;
+    }
+
+    .filter-btn.active {
+      background: #f97316;
+      color: white;
+      border-color: #f97316;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: #f8f9fa;
+    }
+
+    th {
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      color: #475569;
+      font-size: 14px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #475569;
+    }
+
+    tbody tr:hover {
+      background: #f8f9fa;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-approved {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: 0.3s;
+      font-weight: 500;
+    }
+
+    .btn-view {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-view:hover {
+      background: #2563eb;
+    }
+
+    .btn-approve {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-approve:hover {
+      background: #059669;
+    }
+
+    .btn-reject {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-reject:hover {
+      background: #dc2626;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #64748b;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #94a3b8;
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .loading-spinner {
+      background: white;
+      padding: 30px 50px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #f97316;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      header {
+        padding: 15px 20px;
+      }
+
+      .admin-info {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Sedang memproses...</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <img src="assets/images/skimperantisan.png" alt="Logo TVET" onerror="this.style.display='none'">
+    </div>
+    <div class="admin-info">
+      <div class="admin-details">
+        <div class="admin-name" id="adminName">👤 Loading...</div>
+        <div class="admin-role" id="adminRole">Loading...</div>
+      </div>
+      <button class="logout-btn" onclick="handleLogout()">Log Keluar</button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="container">
+    <h1 class="page-title">Dashboard Admin</h1>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card pending">
+        <div class="stat-header">
+          <div>
+            <div class="stat-label">Permohonan Pending</div>
+            <div class="stat-value" id="pendingCount">-</div>
+            <div class="stat-change">⏳ Menunggu kelulusan</div>
+          </div>
+          <div class="stat-icon">⏱️</div>
+        </div>
+      </div>
+
+      <div class="stat-card approved">
+        <div class="stat-header">
+          <div>
+            <div class="stat-label">Permohonan Diterima</div>
+            <div class="stat-value" id="approvedCount">-</div>
+            <div class="stat-change">✅ Diluluskan</div>
+          </div>
+          <div class="stat-icon">✅</div>
+        </div>
+      </div>
+
+      <div class="stat-card rejected">
+        <div class="stat-header">
+          <div>
+            <div class="stat-label">Permohonan Ditolak</div>
+            <div class="stat-value" id="rejectedCount">-</div>
+            <div class="stat-change">❌ Tidak diluluskan</div>
+          </div>
+          <div class="stat-icon">❌</div>
+        </div>
+      </div>
+
+      <div class="stat-card total">
+        <div class="stat-header">
+          <div>
+            <div class="stat-label">Jumlah Pelajar</div>
+            <div class="stat-value" id="totalStudents">-</div>
+            <div class="stat-change">📊 Total keseluruhan</div>
+          </div>
+          <div class="stat-icon">👥</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Applications Table -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">Senarai Permohonan</h2>
+        <div class="filter-buttons">
+          <button class="filter-btn active" onclick="filterByStatus('semua')">Semua</button>
+          <button class="filter-btn" onclick="filterByStatus('pending')">Pending</button>
+          <button class="filter-btn" onclick="filterByStatus('diterima')">Diterima</button>
+          <button class="filter-btn" onclick="filterByStatus('ditolak')">Ditolak</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table id="applicationsTable">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Nama Pemohon</th>
+              <th>Kursus</th>
+              <th>Tarikh Mohon</th>
+              <th>Status</th>
+              <th>Tindakan</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="6" class="loading">Memuatkan data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Skim Perantisan Belia Kemahiran TVET. Hak Cipta Terpelihara.</p>
+  </footer>
+
+  <script>
+    // Apps Script URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSvaQr9KsRm1Fy1lDEijBI0M_-v0_Y2Ecy6dmF_DoPn2JyNAI5Nz1kpzy02dIcy3ku6w/exec';
+
+    let allApplications = [];
+    let currentStatusFilter = 'semua';
+
+    // Check authentication
+    function checkAuthentication() {
+      const loggedIn = localStorage.getItem('tvet_admin_logged_in') || 
+                      sessionStorage.getItem('tvet_admin_logged_in');
+      
+      if (loggedIn !== 'true') {
+        window.location.href = 'adminlogin.html';
+        return false;
+      }
+      
+      loadAdminData();
+      return true;
+    }
+
+    // Load admin data from storage
+    function loadAdminData() {
+      const storage = localStorage.getItem('tvet_admin_name') ? localStorage : sessionStorage;
+      
+      const adminName = storage.getItem('tvet_admin_name') || 'Admin';
+      const adminRole = storage.getItem('tvet_admin_role') || 'Administrator';
+      const adminEmail = storage.getItem('tvet_admin_email') || '';
+      
+      document.getElementById('adminName').textContent = `👤 ${adminName}`;
+      document.getElementById('adminRole').textContent = `${adminRole}${adminEmail ? ' • ' + adminEmail : ''}`;
+    }
+
+    // Handle logout
+    function handleLogout() {
+      if (confirm('Adakah anda pasti ingin log keluar?')) {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = 'adminlogin.html';
+      }
+    }
+
+    // Fetch all applications from Google Sheets
+    async function fetchAllApplications() {
+      try {
+        const url = `${SCRIPT_URL}?action=getAllApplications&timestamp=${Date.now()}`;
+        
+        const response = await fetch(url, {
+          method: 'GET',
+          redirect: 'follow'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          allApplications = result.data.applications || [];
+          sortApplications();
+          updateStats();
+          renderTable();
+        } else {
+          console.error('API Error:', result.message);
+          alert('Ralat: ' + result.message);
+        }
+      } catch (error) {
+        console.error('Error fetching applications:', error);
+        alert('Ralat sambungan: ' + error.message);
+      }
+    }
+
+    // Sort applications by priority
+    function sortApplications() {
+      allApplications.sort((a, b) => {
+        // Priority order: pending > diterima > ditolak
+        const statusOrder = { 'pending': 1, 'diterima': 2, 'ditolak': 3 };
+        const aStatus = (a.status || 'pending').toLowerCase();
+        const bStatus = (b.status || 'pending').toLowerCase();
+        
+        const aPriority = statusOrder[aStatus] || 4;
+        const bPriority = statusOrder[bStatus] || 4;
+        
+        // If same status, sort by date (newest first)
+        if (aPriority === bPriority) {
+          const aDate = new Date(a.timestamp || 0);
+          const bDate = new Date(b.timestamp || 0);
+          return bDate - aDate;
+        }
+        
+        return aPriority - bPriority;
+      });
+    }
+
+    // Update statistics
+    function updateStats() {
+      const pending = allApplications.filter(app => 
+        (app.status || 'pending').toLowerCase() === 'pending'
+      ).length;
+      
+      const approved = allApplications.filter(app => 
+        (app.status || '').toLowerCase() === 'diterima'
+      ).length;
+      
+      const rejected = allApplications.filter(app => 
+        (app.status || '').toLowerCase() === 'ditolak'
+      ).length;
+      
+      const total = allApplications.length;
+
+      document.getElementById('pendingCount').textContent = pending;
+      document.getElementById('approvedCount').textContent = approved;
+      document.getElementById('rejectedCount').textContent = rejected;
+      document.getElementById('totalStudents').textContent = total;
+    }
+
+    // Filter by status
+    function filterByStatus(status) {
+      currentStatusFilter = status;
+      
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      renderTable();
+    }
+
+    // Render table
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      let filtered = [...allApplications];
+      
+      // Filter by status
+      if (currentStatusFilter !== 'semua') {
+        filtered = filtered.filter(app => 
+          (app.status || 'pending').toLowerCase() === currentStatusFilter
+        );
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6">
+              <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <p>Tiada permohonan dijumpai</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach((app, index) => {
+        const row = document.createElement('tr');
+        
+        const status = (app.status || 'pending').toLowerCase();
+        const statusClass = `status-${status === 'diterima' ? 'approved' : status === 'ditolak' ? 'rejected' : 'pending'}`;
+        const statusText = status.charAt(0).toUpperCase() + status.slice(1);
+
+        const name = app.nama || '-';
+        const course = app.kursus || '-';
+        const date = app.timestamp ? new Date(app.timestamp).toLocaleDateString('ms-MY', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        }) : '-';
+
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${name}</td>
+          <td>${course}</td>
+          <td>${date}</td>
+          <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+          <td>
+            <div class="action-btns">
+              <button class="action-btn btn-view" onclick='viewApplication(${app.rowIndex})'>Lihat</button>
+              ${status === 'pending' ? `
+                <button class="action-btn btn-approve" onclick='updateStatus(${app.rowIndex}, "diterima")'>Terima</button>
+                <button class="action-btn btn-reject" onclick='updateStatus(${app.rowIndex}, "ditolak")'>Tolak</button>
+              ` : ''}
+            </div>
+          </td>
+        `;
+        
+        tbody.appendChild(row);
+      });
+    }
+
+    // View application details
+    function viewApplication(rowIndex) {
+      const app = allApplications.find(a => a.rowIndex === rowIndex);
+      if (app) {
+        sessionStorage.setItem('viewing_application', JSON.stringify(app));
+        window.location.href = 'view-application.html';
+      }
+    }
+
+    // Update application status using form submission (CORS-friendly)
+    // Replace the updateStatus function in pageadmin.html with this:
+
+// Update application status using GET request (most reliable for Google Apps Script)
+async function updateStatus(rowIndex, newStatus) {
+  const confirmMsg = newStatus === 'diterima' 
+    ? 'Adakah anda pasti ingin menerima permohonan ini?'
+    : 'Adakah anda pasti ingin menolak permohonan ini?';
+  
+  if (!confirm(confirmMsg)) return;
+
+  // Show loading
+  document.getElementById('loadingOverlay').classList.add('active');
+
+  try {
+    // Use GET request with parameters (most compatible with Google Apps Script)
+    const url = `${SCRIPT_URL}?action=updateStatus&rowIndex=${rowIndex}&status=${newStatus}&timestamp=${Date.now()}`;
+    
+    console.log('Updating status:', { rowIndex, newStatus, url });
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      redirect: 'follow'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    
+    console.log('Update result:', result);
+    
+    document.getElementById('loadingOverlay').classList.remove('active');
+    
+    if (result.success) {
+      alert('Status berjaya dikemaskini!');
+      // Reload data to show updated status
+      await fetchAllApplications();
+    } else {
+      alert('Ralat: ' + result.message);
+    }
+  } catch (error) {
+    document.getElementById('loadingOverlay').classList.remove('active');
+    alert('Ralat sambungan: ' + error.message);
+    console.error('Update error:', error);
+  }
+}
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      if (checkAuthentication()) {
+        fetchAllApplications();
+      }
+    });
+  </script>
+</body>
+</html>
